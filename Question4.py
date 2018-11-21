@@ -5,22 +5,19 @@ import numpy as np
 import random
 import pickle
 
-EPISODES = 100
+EPISODES = 500
 model_file = 'Charts_and_Models/part1'
-load_model = False
+load_model = True
 
 
 class Agent():
-    def __init__(self, state_list, action_size, epsilon):
+    def __init__(self, state_list, action_size):
         self.state_list = state_list
         self.action_size = action_size
         self.gamma = 0.95
-        self.epsilon = epsilon
+        self.epsilon = 1
         self.epsilon_min = 0.1  # changed this from 0.01
-        if epsilon == 1:
-            self.epsilon_decay = 0.995
-        else:
-            self.epsilon_decay = 1
+        self.epsilon_decay = 0.995
         self.alpha = 0.5
         self.q = self.init_q()
 
@@ -99,58 +96,46 @@ def print_table(q):
 
 
 if __name__ == '__main__':
-    env = gym.make("maze-sample-5x5-v0")
+    env = gym.make("maze-random-5x5-v0")
     time_list= []
     state_list = []
     for i in range(5):
         for j in range(5):
             state_list.append((i, j))
     epsilon = [1]
-    for ep in epsilon:
-        time = []
-        agent = Agent(state_list, 4, ep)
-        if load_model:
-            infile = open(model_file, 'rb')
-            agent.q = pickle.load(infile)
-            infile.close()
-            agent.epsilon = 0
-        state_val = [[[] for j in range(EPISODES)] for i in range(4)]
-        for e in range(EPISODES):
-            if e > 5 and ep == 1:
-                agent.epsilon = 0
-            state = env.reset()
-            state = (state[0], state[1])
-            for t in range(500):
-                state_observe = (2,4)
-                for i in range(4):
-                    state_val[i][e].append(agent.q[state_observe][i])
-                # env.render()
-                action = agent.act(state)
-                next_state, reward, done, _ = env.step(action)
-                next_state = (next_state[0], next_state[1])
-                agent.update_q(state, action, reward, next_state)
-                state = next_state
-                if done or t == 499:
-                    print("episode: {}/{}, Took = {}, Epsilon = {}"
-                          .format(e, EPISODES, t, agent.epsilon))
-                    time.append(t)
+    time = []
+    agent = Agent(state_list, 4)
+    if load_model:
+        infile = open(model_file, 'rb')
+        agent.q = pickle.load(infile)
+        infile.close()
+        # agent.epsilon = 0
+    for e in range(EPISODES):
+        # if e > 5 :
+        #     agent.epsilon = 0
+        state = env.reset()
+        state = (state[0], state[1])
+        for t in range(500):
+            # env.render()
+            action = agent.act(state)
+            next_state, reward, done, _ = env.step(action)
+            next_state = (next_state[0], next_state[1])
+            agent.update_q(state, action, reward, next_state)
+            state = next_state
+            if done or t == 499:
+                print("episode: {}/{}, Took = {}, Epsilon = {}"
+                      .format(e, EPISODES, t, agent.epsilon))
+                time.append(t)
 
-                    # print_table(agent.q)
-                    # plt.plot(time)
-                    # plt.savefig('Charts_and_Models/part2.png')
-                    # if e % 100 == 0:
-                    #     outfile = open(model_file, 'wb')
-                    #     pickle.dump(agent.q, outfile)
-                    #     outfile.close()
-                    break
-        time_list.append(time)
-        for i in range(4):
-            for e in range(EPISODES):
-                state_val[i][e] = sum(state_val[i][e])/EPISODES
-        for i in range(4):
-            print(state_val[i])
-        plt.plot(state_val[0], 'r', state_val[1],'g',  state_val[2],'b' ,  state_val[3], 'y')
-        plt.savefig('Charts_and_Models/part5_state_2_4.png')
-    # plt.plot(time_list[0], 'r')
+                # print_table(agent.q)
+                # plt.plot(time)
+                # plt.savefig('Charts_and_Models/part2.png')
+                # if e % 100 == 0:
+                #     outfile = open(model_file, 'wb')
+                #     pickle.dump(agent.q, outfile)
+                #     outfile.close()
+                break
+    plt.plot(time, 'r')
+    plt.savefig('Charts_and_Models/Question4_part2.png')
     # plt.plot(time_list[0], 'r', time_list[1], 'g', time_list[2], 'b', time_list[3], 'y', time_list[4], 'k' )
     # plt.savefig('Charts_and_Models/part5_state_4_0.png')
