@@ -1,8 +1,11 @@
 # gym-maze-rl
-Shortest path in a maze using q learning and sarsa. https://github.com/MattChanTK/gym-maze/blob/master/README.md
 
-#About the Environment
-The following is reproduced as is from the same link mentioned above.
+Shortest path in a maze using q learning and sarsa. Proper Graphical Analysis on all the results and on the importance of hyperparameters  
+
+# About the Environment
+
+The following is reproduced as is from https://github.com/MattChanTK/gym-maze/blob/master/README.md
+
 # gym-maze
 
 A simple 2D maze environment where an agent (blue dot) finds its way from the top left corner (blue square) to the goal at the bottom right corner (red square). 
